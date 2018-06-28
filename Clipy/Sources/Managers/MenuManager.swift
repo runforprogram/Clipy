@@ -322,7 +322,7 @@ fileprivate extension MenuManager {
         let title = trimTitle(clipString)
         let titleWithMark = menuItemTitle(title, listNumber: listNumber, isMarkWithNumber: isMarkWithNumber)
 
-        let menuItem = NSMenuItem(title: titleWithMark, action: #selector(AppDelegate.selectClipMenuItem(_:)), keyEquivalent: keyEquivalent)
+        let menuItem = NSMenuItem(title: titleWithMark, action: #selector(AppDelegate.selectClipMenuItem(_:)))
         menuItem.representedObject = clip.dataHash
 
         if isShowToolTip {

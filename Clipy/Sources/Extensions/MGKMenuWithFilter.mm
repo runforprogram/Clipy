@@ -208,7 +208,7 @@ static inline T* objc_cast(id from) noexcept
     return m_Title.stringValue;
 }
 
-static OSStatus CarbonCallback(EventHandlerCallRef _handler,
+ OSStatus CarbonCallback(EventHandlerCallRef _handler,
                                EventRef _event,
                                void *_user_data)
 {
@@ -221,8 +221,20 @@ static OSStatus CarbonCallback(EventHandlerCallRef _handler,
     
     if( processed )
         return noErr;
-    else
-        return CallNextEventHandler( _handler, _event );
+    else{
+        const auto ev = [NSEvent eventWithEventRef:_event];
+        if( !ev )
+            return false;
+        
+        if( ev.type != NSEventTypeKeyDown )
+            return false;
+        
+        const auto kc = ev.keyCode;
+     OSStatus xx=         CallNextEventHandler( _handler, _event );
+        return xx;
+    }
+    return noErr;
+    
 }
 
 static bool ShouldPassthru(unsigned short _keycode)
@@ -349,14 +361,15 @@ static bool ShouldPassthru(unsigned short _keycode)
             return;
         }
         
-        EventTypeSpec evts[2];
+        EventTypeSpec evts[1];
         evts[0].eventClass = kEventClassKeyboard;
         evts[0].eventKind = kEventRawKeyDown;
-        evts[1].eventClass = kEventClassKeyboard;
-        evts[1].eventKind = kEventRawKeyRepeat;
+      //  evts[1].eventClass = kEventClassKeyboard;
+      //  evts[1].eventKind = kEventRawKeyRepeat;
+         EventTypeSpec hotKeyPressedSpec = { .eventClass = kEventClassKeyboard, .eventKind = kEventHotKeyPressed };
         const auto result = InstallEventHandler(dispatcher,
                                                 CarbonCallback,
-                                                2,
+                                                1,
                                                 &evts[0],
                                                 (__bridge void*)self,
                                                 &m_EventHandler);
